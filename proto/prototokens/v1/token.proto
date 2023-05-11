@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package prototokens.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/lusis/prototokens/gen/go/prototokens/v1;tokenpb";
+
+message SignedToken {
+    bytes signature = 1;
+    bytes prototoken = 2;
+}
+
+message ProtoToken {
+    // id is used for revocation and other purposes
+    // tokens without ids cannot be checked for revocation
+    string id = 1;
+    // secondary id such as a primary group id of some kind
+    string sid = 2;
+    // opaque data to be passed across the token if any
+    bytes vendor = 3;
+    // some canned usages for tokens if desired
+    repeated TokenUsages usages = 4;
+    // timestamp data
+    Timestamps timestamps = 15;
+    
+}
+
+message Timestamps {
+    google.protobuf.Timestamp not_valid_before = 1;
+        google.protobuf.Timestamp not_valid_after = 2;
+}
+// TokenUsages are various usages a ProtoToken can be restricted to
+enum TokenUsages {
+    // always initialize default value of 0 to UNKNOWN
+    TOKEN_USAGES_UNKNOWN = 0;
+    // usage as a "human" (whatever that means to you)
+    TOKEN_USAGES_HUMAN = 1;
+    // usage as a "machine" (whatever that means to you)
+    TOKEN_USAGES_MACHINE = 2;
+    // usage for token exchange
+    TOKEN_USAGES_EXCHANGE = 3;
+    // usage for rotation
+    TOKEN_USAGES_ROTATION = 4;
+}
