@@ -3,7 +3,7 @@ run:
   skip-dirs-use-default: true
 
 exclude-rules:
-  - path: proto/
+  - path: proto
   - path: _test\.go
     linters:
       - errcheck
