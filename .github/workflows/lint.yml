@@ -36,7 +36,7 @@ jobs:
           args: --timeout=3m
 
           # Optional: working directory, useful for monorepos
-          # working-directory:
+          working-directory: $GITHUB_WORKSPACE
 
           # Optional: golangci-lint command line arguments.
           # args: --issues-exit-code=0
