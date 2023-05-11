@@ -1,10 +1,11 @@
 run:
   tests: false
-  skip-dirs-use-default: true
+  skip-dirs:
+    - vendor
+    - proto
 
 exclude-rules:
   - path: proto
-  - path: gen
   - path: _test\.go
     linters:
       - errcheck
