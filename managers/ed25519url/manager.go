@@ -23,15 +23,12 @@ type Manager struct {
 }
 
 // KeyDataFunc is a func that can return the seed passed to [ed25519.NewFromSeed] and optional error
-type KeyDataFunc func(context.Context) ([]byte, error)
+type KeyDataFunc func(context.Context) []byte
 
 // New returns a new [sharedkey.Manager]
 func New(keyDataFunc KeyDataFunc) (*Manager, error) {
-	// verify the seed
-	seed, err := keyDataFunc(context.Background())
-	if err != nil {
-		return nil, err
-	}
+	// get the seed an make sure it's valid
+	seed := keyDataFunc(context.Background())
 	seedlen := len(seed)
 	if seedlen != ed25519.SeedSize {
 		return nil, fmt.Errorf("%w: invalid seed size returned (want: %d have: %d)", prototokens.ErrKeyData, ed25519.SeedSize, seedlen)
@@ -155,23 +152,19 @@ func (skm *Manager) Decode(ctx context.Context, s string) (*tokenpb.SignedToken,
 }
 
 func (skm *Manager) sign(ctx context.Context, data []byte) ([]byte, error) { // nolint: unparam
-	seed, err := skm.keyDataFunc(ctx)
-	if err != nil {
-		return nil, err
-	}
+	seed := skm.keyDataFunc(ctx)
+
 	priv := ed25519.NewKeyFromSeed(seed)
 	sig := ed25519.Sign(priv, data)
 	return sig, nil
 }
 
 func (skm *Manager) verify(ctx context.Context, sig []byte, data []byte) error {
-	seed, err := skm.keyDataFunc(ctx)
-	if err != nil {
-		return fmt.Errorf("%w: %w", prototokens.ErrKeyData, err)
-	}
+	seed := skm.keyDataFunc(ctx)
+
 	pub := ed25519.NewKeyFromSeed(seed).Public().(ed25519.PublicKey)
 	if verified := ed25519.Verify(pub, data, sig); !verified {
-		return fmt.Errorf("%w: %w", prototokens.ErrTamper, err)
+		return prototokens.ErrTamper
 	}
 	return nil
 }

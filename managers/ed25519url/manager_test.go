@@ -238,8 +238,8 @@ func setupTest(testName string, keyDataFunc KeyDataFunc) (*setupData, error) {
 		if err != nil {
 			return nil, err
 		}
-		keyDataFunc = func(_ context.Context) ([]byte, error) {
-			return keydata, nil
+		keyDataFunc = func(_ context.Context) []byte {
+			return keydata
 		}
 	}
 
